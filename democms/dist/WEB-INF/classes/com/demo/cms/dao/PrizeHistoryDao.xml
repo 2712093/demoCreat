@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.cms.dao.PrizeHistoryDao">
+  <insert id="addPrizeHistory" parameterType="com.demo.cms.entity.PrizeHistory">
+  	insert into prizeHistory(userId,prizeid,createTime)
+  	values(#{userId},#{prizeId},#{createTime})
+  	<selectKey resultType="long" keyProperty="id">
+       select last_insert_id()
+  	</selectKey>
+  </insert>
+  
+  <select id="getAllList" resultType="com.demo.cms.vo.PrizeHistoryVo">
+  	select r.*,u.name userName,u.mobilePhone mobilePhone ,p.createTime historyTime from prizeHistory p 
+  	left join prize r on p.prizeid = r.prizeId
+  	left join user u on p.userid = u.userid
+  	<where>
+  		<if test="userId > 0">
+  			p.userId = #{userId}
+  		</if>
+  		<if test="prizeId > 0 ">
+  			and p.prizeId = #{prizeId}
+  		</if>
+  		<if test="prizeNumber == 0 ">
+  			and r.prizeNumber = #{prizeNumber}
+  		</if>
+  		<if test="prizeNumber > 0 ||  0 > prizeNumber ">
+  			and r.prizeNumber >= #{prizeNumber}
+  		</if>
+  		<if test="userName != null and userName != '' ">
+  			and u.name like '%${userName}%'
+  		</if>
+  		<if test="prizeName != null and prizeName != '' ">
+  			and r.name like '%${prizeName}%'
+  		</if>
+  		<if test="time != null and time != '' ">
+  			and DATE_FORMAT(p.createTime,'%Y-%m-%d')=#{time}
+  		</if>
+  		
+  	</where>
+  	order by p.createTime desc
+  	limit #{offset},#{rows}
+  </select>
+  
+  <select id="getAllListCount" resultType="int">
+     select count(p.id) from prizeHistory p 
+  	left join prize r on p.prizeid = r.prizeId
+  	left join user u on p.userid = u.userid
+     <where>
+  		<if test="userId > 0">
+  			p.userId = #{userId}
+  		</if>
+  		<if test="prizeId > 0 ">
+  			and p.prizeId = #{prizeId}
+  		</if>
+  		<if test="prizeNumber == 0 ">
+  			and r.prizeNumber = #{prizeNumber}
+  		</if>
+  		<if test="prizeNumber > 0 ||  0 > prizeNumber ">
+  			and r.prizeNumber >= #{prizeNumber}
+  		</if>
+  		<if test="userName != null and userName != '' ">
+  			and u.name like '%${userName}%'
+  		</if>
+  		<if test="prizeName != null and prizeName != '' ">
+  			and r.name like '%${prizeName}%'
+  		</if>
+  		<if test="time != null and time != '' ">
+  			and DATE_FORMAT(p.createTime,'%Y-%m-%d')=#{time}
+  		</if>
+  	 </where>
+  </select>
+  
+  <select id="getPrizeHistoryById" resultType="com.demo.cms.entity.PrizeHistory">
+  	select * from prizeHistory where id=#{id}
+  </select>
+  
+  <select id="getGroupByPrizeId" resultType="com.demo.cms.vo.PrizeHistoryVo">
+  		select r.*,g.count from (SELECT p.prizeid,count(*) count
+  		FROM (
+  		select * from prizehistory p 
+  			<where>
+  				<if test="startTime != null and startTime != '' ">
+		  			DATE_FORMAT(p.createTime,'%Y-%m-%d')>=#{startTime}
+		  		</if>
+  				<if test="endTime != null and endTime != '' ">
+		  			and DATE_FORMAT(p.createTime,'%Y-%m-%d')&lt;=#{endTime}
+		  		</if>
+  			</where>
+  		) p group by p.prizeid) g
+		left join prize r on g.prizeid=r.prizeId
+		order by r.type asc,r.prizeNumber desc
+  </select>
+  <select id="getListByTime" resultType="com.demo.cms.vo.PrizeHistoryVo">
+  		select r.*,p.id,u.mobilePhone mobilePhone ,p.createTime historyTime from prizeHistory p 
+  	left join prize r on p.prizeid = r.prizeId
+  	left join user u on p.userid = u.userid
+  	<where>
+  		<if test="startTime != null and startTime != '' ">
+		  	DATE_FORMAT(p.createTime,'%Y-%m-%d %H:%i:%s')>=#{startTime}
+  		</if>
+		<if test="endTime != null and endTime != '' ">
+  			and DATE_FORMAT(p.createTime,'%Y-%m-%d %H:%i:%s')&lt;=#{endTime}
+  		</if>
+  		
+  	</where>
+  	order by p.createTime desc
+  </select>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.cms.dao.LoginLogDao">
+  <insert id="addLoginLog" parameterType="com.demo.cms.entity.LoginLog">
+  	insert into LoginLog(userId,mobilePhone,ip,createTime,type,descString)
+  	values(#{userId},#{mobilePhone},#{ip},#{createTime},#{type},#{descString})
+  	<selectKey resultType="long" keyProperty="loginId">
+       select last_insert_id()
+  	</selectKey>
+  </insert>
+   <select id="getAllList" resultType="com.demo.cms.entity.LoginLog">
+  	select * from LoginLog
+  	<where>
+  		<if test="type != null and type != '' ">
+  			type=#{type}
+  		</if>
+  		<if test="mobilePhone != null and mobilePhone != '' ">
+  			and mobilePhone like '%${mobilePhone}%'
+  		</if>
+  		<if test="time != null and time != '' ">
+  			and DATE_FORMAT(createTime,'%Y-%m-%d')=#{time}
+  		</if>
+  		
+  	</where>
+  	order by createTime desc
+  	limit #{offset},#{rows}
+  </select>
+  
+  <select id="getAllListCount" resultType="int">
+     select count(*) from LoginLog 
+     <where>
+     	<if test="type != null and type != '' ">
+  			type=#{type}
+  		</if>
+  		<if test="mobilePhone != null and mobilePhone != '' ">
+  			mobilePhone like '%${mobilePhone}%'
+  		</if>
+  		<if test="time != null and time != '' ">
+  			and DATE_FORMAT(createTime,'%Y-%m-%d')=#{time}
+  		</if>
+  	 </where>
+  </select>
+</mapper>
