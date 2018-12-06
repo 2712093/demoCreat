@@ -74,7 +74,9 @@ public class DrawAction {
 	@RequestMapping(value="/come.htm",method=RequestMethod.GET)
 	public String come(HttpServletRequest request,ModelMap modelMap){
 		String mobilePhone = request.getParameter("mobilePhone");
+//		String status = request.getParameter("");
 		try{
+			
 			if(!StringUtils.isBlank(mobilePhone)){
 				//验证是否北京号码
 				List<MobilePhone> listPhone = mobilePhoneService.getPhoneByPhone(mobilePhone);
@@ -99,6 +101,8 @@ public class DrawAction {
 					log.setDescString("本地访问");
 					loginLogService.addLoginLog(log);
 				}
+			}else {
+				
 			}
 			modelMap.put("mobilePhone", mobilePhone);
 		}catch(Exception e){

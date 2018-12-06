@@ -6,12 +6,15 @@
   position: relative;
 }
 .MerryDady{
-  background: url("../images/background.png") no-repeat center center;
-  background-size: cover;
   width: 100%;
-  height: 12.07rem;
-  position: absolute;
-  bottom: .3rem;
+height: calc(100% - 1.1rem);
+position: fixed;
+z-index: -10;
+background-image: url(../images/background.png);
+background-repeat: no-repeat;
+background-position: 0px 0px;
+background-size: 100% 100%;
+
 }
 .MerryZMD{
 
@@ -22,6 +25,7 @@
   height: 1.5rem;
   z-index: 9;
   overflow: hidden;
+ 
 }
 .MerryZMD p{
   font-size: .3rem;
@@ -241,7 +245,7 @@
   display: inline-block;
   border-radius: 10px;
    background: #fcfc9d;
-   padding: 0 .2rem;
+  width:2.18rem;
 
    box-shadow:  0px 3px 0px 0px rgba(0,0,0,0.3);
 }
@@ -363,51 +367,6 @@
   width:60%;
   text-align: center;
 }
-/* @media only screen and (min-device-width:320px){
-  .MerryZMD{
-    top:36%;
-  }
-}
-@media only screen and (min-device-width:375px){
-  .MerryZMD{
-    top:48%;
-  }
-  }
-@media only screen and (min-device-width:411px){
-  .MerryZMD{
-    top:36%;
-  }
-  }   */
-@media only screen and (min-device-width:412px){
-  .MerryZMD{
-    top:39%;
-  }
- .MerryDady{
-      width: 100%;
-   height: 11.07rem; 
-     background: url("../images/background1.png") no-repeat center center;
-  background-size: contain;
-      
-  }
-.giftMerryDiv{
-  
-  top:42%;
-}
-  .backWhit{
-   
-  position: absolute;
-  bottom: 54px;
-  z-index: -1;
-  height: 37px;
-  background: #fff;
-  width: 100%;
-}
-  
-}
-/* @media only screen and (min-device-width:600px){
-  .MerryZMD{
-    top:34%;
-  }
-  } */
+
 
 

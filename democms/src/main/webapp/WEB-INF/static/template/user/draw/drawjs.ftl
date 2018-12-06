@@ -20,18 +20,15 @@
         <span class="right" onclick="actPrize()">我的奖品</span>
     </div>
     <div class="MerryDady">
-    	<div id="demo3" class="MerryZMD">
-      <div id="dl">
-    
-        </div>
-    </div>
+    	<div class="MerryZMD">
+	      <!-- <canvas style="width: 68%;height: 1.5rem;font-size: 22px"></canvas> -->
+	    </div>
         <div class="giftMerryDiv">
           <div id="hand"><img src="${TEMPLATE_DRAW_PATH}/images/gift.png"></div>
           <div id="hand3"><img src="${TEMPLATE_DRAW_PATH}/images/gift.png"></div>
           <div id="hand2"><img src="${TEMPLATE_DRAW_PATH}/images/gift.png"></div>
        </div>
     </div>
- <div class="backWhit"></div>
 
  <div class="swiper-container swiper-no-swiping">
     <div class="swiper-wrapper">
@@ -227,23 +224,11 @@
 			closeWin();
 		}
 		//获取最新获奖记录
-		prizeTop();
+		//prizeTop();
 	})();
 	
 	
-  // 走马灯
-  var drawLetters = document.getElementById("demo3");　　　　
-  var dl = document.getElementById("dl");　　　　
-  var speed = 20; //滚动速度值，值越大速度越慢
-  　　　　
-  function Marquee() {　　　　　　
-      drawLetters.scrollTop++;
-      var newNode = document.createElement("div");　　　　　　
-      newNode.innerHTML = dl.innerHTML;　　　　　　
-      drawLetters.insertBefore(newNode, null);　　　　
-  }　　　　
-  var MyMar = setInterval(Marquee, speed); //设置定时器
-	
+
 	function draw(){ 
 	   $.ajax({
 	        type: "POST",
@@ -399,7 +384,7 @@
 	           				var  mp = n.mobilePhone.substr(0,3)+"****"+n.mobilePhone.substr(7,4)
 	           				html += "<p>恭喜" + mp + "用户获得"+n.name+"</p>";
 	           			})
-	           			$("#dl").html(html);
+	           		//	$("#dl").html(html);
 	           		}
 				} else {
 					alert(data.errors.drawMsg);
@@ -410,5 +395,6 @@
 	        }
 	    });
 	}
+	
 </script>
 </html>
