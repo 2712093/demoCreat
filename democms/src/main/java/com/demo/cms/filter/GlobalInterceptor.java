@@ -30,7 +30,7 @@ public class GlobalInterceptor implements HandlerInterceptor{
 		if(null == modelAndView){
 			return;
 		}
-		String basePath = HttpUtils.getBasePath(request);
+		String basePath = HttpUtils.getHttpBasePath(request);
 		modelAndView.addObject("BASE_PATH",basePath);
 		modelAndView.addObject("UPLOAD_BASE_PATH",basePath+"/upload");
 		modelAndView.addObject("BOOTSTRAP_PATH",basePath+"/static/"+SystemConstant.BOOTSTRAP_PATH);

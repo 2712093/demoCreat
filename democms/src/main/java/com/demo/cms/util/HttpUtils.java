@@ -81,6 +81,17 @@ public class HttpUtils {
         return ip;  
     }
 	/**
+	 * 得到请求的http目录
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static String getHttpBasePath(HttpServletRequest request) {
+		String path = request.getContextPath();
+		String basePath = PropertyUtils.getValue("demo.HTTP") + path;
+		return basePath;
+	}
+	/**
 	 * 得到请求的根目录
 	 * 
 	 * @param request
@@ -89,7 +100,7 @@ public class HttpUtils {
 	public static String getBasePath(HttpServletRequest request) {
 		String path = request.getContextPath();
 		String basePath = request.getScheme() + "://" + request.getServerName()
-				+ ":" + request.getServerPort() + path;
+		+ ":" + request.getServerPort() + path;
 		return basePath;
 	}
 
