@@ -1,0 +1,20 @@
+@charset "UTF-8";
+
+*{padding:0; margin: 0}
+a,input,button{ -webkit-tap-highlight-color: rgba(0,0,0,0); 
+	} /*清除掉ios自带圆角*/
+input,button{ -webkit-appearance: none;border-radius: 0; 
+} 
+body{ -webkit-user-select: none;-webkit-text-size-adjust: 100%;} /*字体设置*/ 
+body *{ 
+	font-family: helvetica; 
+} /*每台设备里的默认字体是不一样的（移动端设备里大多数没有宋体和微软雅黑字体） */
+body,html{max-width:100%;height: 100%;}
+a{ text-decoration: none; } 
+input{ outline: none; vertical-align: middle; } 
+img{ vertical-align: middle; } 
+ul{ list-style: none; } 
+h3,h4,p{ margin:0; } 
+.left{ float:left; } 
+.right{ float:right; } 
+.clearfix:after{ content:''; display: block; clear: both; }

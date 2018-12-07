@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.demo.cms.dao.MobilePhoneDao">
- 
-  <select id="getPhoneByPhone" resultType="com.demo.cms.entity.MobilePhone">
-  	select * from mobilephone t where t.minnumber&lt;= #{phone}
-	and  t.maxnumber>=#{phone}
-  </select>
-</mapper>

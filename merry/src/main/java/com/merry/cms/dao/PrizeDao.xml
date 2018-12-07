@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.merry.cms.dao.PrizeDao">
+  <insert id="addPrize" parameterType="com.merry.cms.entity.Prize">
+  	insert into Prize(name,info,type,probability,prizeNumber)
+  	values(#{name},#{info},#{type},#{probability},#{prizeNumber})
+  	<selectKey resultType="long" keyProperty="prizeId">
+       select last_insert_id()
+  	</selectKey>
+  </insert>
+  <update id="updatePrizeByprizeId" parameterType="com.merry.cms.entity.Prize">
+  	update Prize set name=#{name} ,info=#{info} ,type=#{type} ,probability=#{probability} ,
+  	prizeNumber=#{prizeNumber} where prizeId=#{prizeId}
+  </update>
+  <delete id="deletePrize" parameterType="long">
+  	delete from Prize where prizeId=#{prizeId}
+  </delete>
+  
+  <select id="getAllList" resultType="com.merry.cms.entity.Prize">
+  	select * from Prize order by type asc,probability asc limit #{offset},#{rows}
+  </select>
+  
+  <select id="getAllListCount" resultType="int">
+     select count(*) from Prize
+  </select>
+  
+  <select id="getPrizeById" resultType="com.merry.cms.entity.Prize">
+  	select * from Prize where PrizeId=#{prizeId}
+  </select>
+  <select id="getPrizeByType" resultType="com.merry.cms.entity.Prize">
+  	select * from Prize where type=#{type} order by prizeNumber asc
+  </select>
+</mapper>
