@@ -2,11 +2,7 @@ package com.merry.cms.constant;
 
 public class ConfigConstant {
 	public static String DEFAULT_TEMPLATE ="default";
-	public static String SHAMROCK_TEMPLATE="shamrock_template";
-	/**
-	 * 抽奖规则
-	 */
-	public static String MERRY_DRAW_RULE="merry_draw_rule";
+	public static String SHAMROCK_TEMPLATE="merry_template";
 	/**
 	 * 抽奖次数
 	 */

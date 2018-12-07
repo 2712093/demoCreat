@@ -30,8 +30,6 @@ import com.merry.cms.service.UserService;
 import com.merry.cms.service.WxService;
 import com.merry.cms.util.DateUtil;
 import com.merry.cms.util.HttpUtils;
-import com.merry.cms.util.PropertyUtils;
-import com.merry.cms.util.WechatUtils;
 import com.merry.cms.vo.JsonVo;
 import com.merry.cms.vo.PrizeHistoryVo;
 
@@ -52,15 +50,6 @@ public class DrawAction {
 	@Autowired
 	private WxService wxService;
 	
-	@RequestMapping(value="/index.htm",method=RequestMethod.GET)
-	public String test(HttpServletRequest request,ModelMap modelMap){
-		String mobilePhone = request.getParameter("mobilePhone");
-		
-		String url  = PropertyUtils.getValue("merry.HTTP")+"/wx/getUserCode.htm?code=&mobilePhone"+mobilePhone;
-		String httpUrl = WechatUtils.buildAuthorizeUrl(PropertyUtils.getValue("merry.APPID"),url,true);
-		
-		return "redirect:"+httpUrl;
-	}
 	/**
 	 * 用户访问页面
 	 * @param request

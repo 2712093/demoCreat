@@ -345,9 +345,9 @@
 		           				var datetime = ((myDate.getMonth() + 1) > 10 ? (myDate.getMonth() + 1) : "0"+ (myDate.getMonth() + 1))
 	               					+ "."
 	                				+ (myDate.getDate() < 10 ? "0" + myDate.getDate() : myDate.getDate());
- 		           				html += "<tr><td>"+i+"</td><td>"+n.name+"</td><td>"+datetime+"</td></tr>";
+ 		           				html += "<tr><td>"+(i+1)+"</td><td>"+n.name+"</td><td>"+datetime+"</td></tr>";
 		           			})
-		           			$(".winBody").append(html);
+		           			$(".winBody").html(html);
 		           		}else{
 		           		
 			           		var winPrizeDiv = document.getElementById("winId");
