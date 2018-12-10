@@ -145,16 +145,14 @@
         <div class="popDivResImg popDivResImg03" id="popImg03"><img src="${TEMPLATE_DRAW_PATH}/images/openGift.png"></div> 
     </div>
 <!--未中奖 弹窗-->
-  <div id="popNone" style="display: none">
+  <div id="popNone">
         <div class="popDivBgImgNone">
-          <div>
-             <p>您已经参与抽奖了,</p>
-             <p class="pd10">下次活动再参与吧。</p>
-             <span onclick="noneClose()">OK</span>
-          </div>
-          
-        </div>    
+          <img src="${TEMPLATE_DRAW_PATH}/images/gbNone01.png">
+          <img src="${TEMPLATE_DRAW_PATH}/images/gbNone02.png" onclick="noneClose()">
+        </div> 
+        
   </div>
+
 
    
 <!--1GB 弹窗-->
