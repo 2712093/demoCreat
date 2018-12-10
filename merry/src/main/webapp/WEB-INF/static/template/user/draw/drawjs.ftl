@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes">
-<title>抽奖</title>
+<title>圣诞节流量大派送</title>
 <meta name="description" content="">
 <meta name="keywords" content="">
     <link href="${TEMPLATE_DRAW_PATH}/css/reset.css" type="text/css" rel="stylesheet"/>
@@ -128,7 +128,7 @@
     			</div>
     			<div class="rulesFontSpan">
     			<span class="left" onclick="tell()">告诉朋友</span>
-    			<span class="right"><a href="http://wx.10086.cn/website/score/index/new"  style="color:#000;">查询流量</a></span>
+    			<span class="right"><a href="http://wx.10086.cn/website/serviceMargin/index/new"  style="color:#000;">查询流量</a></span>
     		    </div>
     		</div>
     	</div>	
@@ -145,9 +145,17 @@
         <div class="popDivResImg popDivResImg03" id="popImg03"><img src="${TEMPLATE_DRAW_PATH}/images/openGift.png"></div> 
     </div>
 <!--未中奖 弹窗-->
-  <div id="popNone">
-        <div class="popDivBgImgNone"></div>    
+  <div id="popNone" style="display: none">
+        <div class="popDivBgImgNone">
+          <div>
+             <p>您已经参与抽奖了,</p>
+             <p class="pd10">下次活动再参与吧。</p>
+             <span onclick="noneClose()">OK</span>
+          </div>
+          
+        </div>    
   </div>
+
    
 <!--1GB 弹窗-->
    <div id="pop01">
@@ -187,7 +195,7 @@
     	<div class="popDivBgImg10"></div>
     	<span onclick="receiveClick()">收下咯，去查查流量吧</span>
     </div>     
-    <a id="alink" href="http://wx.10086.cn/website/score/index/new" style="visibility: hidden;">收下咯，去查查流量吧</a>     
+    <a id="alink" href="http://wx.10086.cn/website/serviceMargin/index/new" style="visibility: hidden;">收下咯，去查查流量吧</a>     
      <audio id="audio" autoplay='autoplay' >
 	  <source  src="${TEMPLATE_DRAW_PATH}/css/zhongjiang.mp3" />
 	  <!--<source  src="http://www.checkp2p.com/xs/MerryChristmas1/js/zhongjiang.mp3" />-->
@@ -259,10 +267,10 @@
            				setTimeout("close("+data.t.prizeNumber+")", 1000);
            				//alert("恭喜你抽中"+data.t.prizeNumber+"G流量！");
 	           		}else{
-	           			//谢谢参与
-           				//resDiv.style.display="block";
-           				//setTimeout("noneClose()", 1000);
-           				alert("您已经抽奖啦，下次活动再参与吧。");
+	           		//谢谢参与
+	           			$(".popDivResImg").hide()
+           				noneShow();
+           				//alert("您已经抽奖啦，下次活动再参与吧。");
 	           		}
 				} else {
 					alert(data.errors.drawMsg);
@@ -274,14 +282,17 @@
 	    });
 	} 
 	function close(num){
-		   resDiv.style.display="none";
-			var handDiv = document.getElementById("pop"+(num<10?"0"+num:num)); 
-			handDiv.style.display="block";
+	    resDiv.style.display="none";
+		var handDiv = document.getElementById("pop"+(num<10?"0"+num:num)); 
+		handDiv.style.display="block";
 	}
-	function noneClose(num){
-		   resDiv.style.display="none";
+	function noneShow(){
 			var popNoneDiv = document.getElementById("popNone"); 
 			popNoneDiv.style.display="block";
+	}
+	function noneClose(){
+			var popNoneDiv = document.getElementById("popNone"); 
+			popNoneDiv.style.display="none";
 	}
 	function closeXX(){
 
@@ -398,7 +409,7 @@
 	           			$.each(data.t,function(i,n){
 	           				var  mp = n.mobilePhone.substr(0,3)+"****"+n.mobilePhone.substr(7,4)
 	           				html += "恭喜" + mp + "用户获得"+n.name;
-	           				$("#marquee"+i).html(html);
+	           				$("#marquee"+(i+1)).html(html);
 	           			})
 	           		}
 				} else {
