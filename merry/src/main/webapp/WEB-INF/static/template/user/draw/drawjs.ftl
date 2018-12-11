@@ -201,6 +201,7 @@
 </body>
  <script src="${TEMPLATE_DRAW_PATH}/js/swiper.min.js"></script>
  <script src="${TEMPLATE_DRAW_PATH}/js/jquery.liMarquee.js"></script>
+ <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 <script type="text/javascript">
 
 	var mobilePhone = "${mobilePhone?if_exists}";
@@ -439,10 +440,10 @@
 				nonceStr: data.nonceStr,
 				signature: data.signature,
 				jsApiList: ['checkJsApi',
-					        'openLocation',
-					        'getLocation',
+							'getLocation',
 					        'onMenuShareTimeline',
-					        'onMenuShareAppMessage']
+					        'onMenuShareAppMessage',
+					        'onMenuShareQQ']
 			});
  
 			//--
@@ -472,6 +473,7 @@
 		        wx.onMenuShareTimeline({
 		            title: '${draw_title}',
 	                 link: data.link,
+	                 desc: '年底最后一波，走起！',
 	                 imgUrl: '${TEMPLATE_DRAW_PATH}/images/icon.jpg',
 	                 trigger: function (res) {
 	                     // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
@@ -488,14 +490,19 @@
 	                 }
 	             });
 
-
-		    	});
-		
+				//分享到QQ
+				wx.onMenuShareQQ({ 
+					title: '${draw_title}',
+					desc: '年底最后一波，走起！',
+					link: data.link,
+					imgUrl: '${TEMPLATE_DRAW_PATH}/images/icon.jpg'
+				});
 		         wx.checkJsApi({
 		             jsApiList: [
 		                 'getLocation',
 		                 'onMenuShareTimeline',
-		                 'onMenuShareAppMessage'
+		                 'onMenuShareAppMessage',
+		                 'onMenuShareQQ'
 		             ],
 		             success: function (res) {
 		                 alert(JSON.stringify(res));
