@@ -1,6 +1,7 @@
 package com.merry.cms.action;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -12,17 +13,18 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.merry.cms.entity.MobilePhone;
 import com.merry.cms.service.MobilePhoneService;
 import com.merry.cms.service.WxService;
 import com.merry.cms.util.PropertyUtils;
 import com.merry.cms.util.WechatUtils;
-import com.merry.cms.util.WechatUtils.Token;
-import com.merry.cms.util.WechatUtils.UserInfo;
+import com.merry.cms.vo.JsSignature;
 
 @Controller
 @RequestMapping("/wx")
@@ -45,42 +47,63 @@ public class WxAction {
 		String url  = PropertyUtils.getValue("merry.HTTP")+"/wx/getUserCode.htm";
 		return WechatUtils.buildAuthorizeUrl(PropertyUtils.getValue("merry.APPID"),url,true);
 	}
-	@RequestMapping("getOpenid")
-    public String getOpenId(@RequestParam("rurl") String rurl) {
-        String url = WechatUtils.buildAuthorizeUrl(PropertyUtils.getValue("merry.APPID"), PropertyUtils.getValue("merry.HTTP")+"/wx/getUserCode.htm?rurl="+rurl);
-        logger.info("redirect url-> {}");
-        return "redirect:"+url;
+	@RequestMapping("getCode")
+    public void getOpenId(HttpServletResponse response) throws IOException {
+        String url = WechatUtils.buildAuthorizeUrl(PropertyUtils.getValue("merry.APPID"), PropertyUtils.getValue("merry.HTTP")+"/wx/getUserCode.htm");
+        logger.info("redirect url-> "+url);
+        response.sendRedirect(url.toString());
     }
 	//微信用户授权回调函数 
 	@RequestMapping("/getUserCode.htm")
-	public String userCode(String code, String rurl,HttpServletRequest request, HttpServletResponse response) {
+	public String userCode(String code,HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
+		logger.debug("微信用户授权回调函数<wx/getUserCode.htm>");
 		logger.debug(JSON.toJSONString(request.getParameterMap()));
-		//用code换取access_token   
-		//APPID   公众号id
-		//SECRET  公众号秘钥
-		Token token = WechatUtils.getToken(PropertyUtils.getValue("merry.APPID"),PropertyUtils.getValue("merry.SECRET"),code);
+		
+		String mobilePhone = null;
+		String nickname = null;
 		//获取用户信息   暂时没有手机号 ，需要打印微信返回用户对象看看有没有手机号，以及手机号对应的字段
-		UserInfo userInfo = WechatUtils.getUserInfo(token.getAccessToken(),token.getOpendid());
-		//确定手机号码后，这里赋值
-		String mobilePhone = "11111"; //userInfo.getxxxx();
-		
-		//验证是否北京号码
-		List<MobilePhone> listPhone = mobilePhoneService.getPhoneByPhone(mobilePhone);
-		if(listPhone==null || listPhone.size()<=0) {
-			mobilePhone = "00";
-		}
-		
+		String info = WechatUtils.getFwUserInfo(PropertyUtils.getValue("merry.accountid"),code);
+		JSONObject demoJson =  JSON.parseObject(info);
+		String status =demoJson.getString("status");
+		logger.debug("status="+status);
+		//未关注
+        if("3001".equals(status)) {
+        	response.sendRedirect(PropertyUtils.getValue("merry.HTTP")+"/draw/ewm.htm");
+        	return null;
+        }else if("0000".equals(status)){
+        	//确定手机号码后，这里赋值
+			mobilePhone = demoJson.getString("telNum");
+			nickname = demoJson.getString("nickName");
+			//验证是否北京号码
+			List<MobilePhone> listPhone = mobilePhoneService.getPhoneByPhone(mobilePhone);
+			if(listPhone==null || listPhone.size()<=0) {
+				mobilePhone = "00";
+			}
+        }
 		//用户信息获取完成后转向到抽奖页面
-		return "redirect:/draw/come.htm?mobilePhone="+mobilePhone;
+        response.sendRedirect(PropertyUtils.getValue("merry.HTTP")+"/draw/come.htm?mobilePhone="+mobilePhone + "&status="+status+"&nickname="+URLEncoder.encode(nickname,"UTF-8"));
+        return null;
 	}
 
 	//微信分享代码  
 	@RequestMapping("/cover.json")
 	@ResponseBody
-	public Map<String, String> identifyCover(String url,HttpServletRequest request, HttpServletResponse response) {
-		
-		
+	public JsSignature identifyCover(HttpServletRequest request, HttpServletResponse response) {
+		RestTemplate restTemplate = new RestTemplate();
+		//分享
+        String appIp = PropertyUtils.getValue("merry.APPID");
+        String jsSignatureUrl = PropertyUtils.getValue("merry.jsSignatureUrl");
+       
+        String str = request.getQueryString();
+        String shareurl = PropertyUtils.getValue("merry.HTTP") + "/draw/come.htm?"+ str;;
+        
+        String shareResult = restTemplate.getForObject(String.format("%s?url=%s&accountId=%s", jsSignatureUrl, shareurl, PropertyUtils.getValue("merry.accountid")), String.class);
+        JsSignature jsSignature = JSON.parseObject(shareResult, new TypeReference<JsSignature>() {
+        });
+        jsSignature.setAppId(appIp);
+        jsSignature.setLink(shareurl);
+		/*
 		// 例如我们有一个分享的链接为：http://test.weixinfwenx.cn/project/fenxiang.do?id=1&name=2;
 		// 那么domainAddr = http://test.weixinfwenx.cn,这个可以动态的配置在项目里，方便测试环境和生产
 		// 域名的切换
@@ -107,7 +130,8 @@ public class WxAction {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return null;
+		*/
+		return jsSignature;
 	}
 	
 }

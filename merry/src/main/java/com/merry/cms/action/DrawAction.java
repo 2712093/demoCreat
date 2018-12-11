@@ -1,11 +1,15 @@
 package com.merry.cms.action;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.helper.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -30,6 +34,7 @@ import com.merry.cms.service.UserService;
 import com.merry.cms.service.WxService;
 import com.merry.cms.util.DateUtil;
 import com.merry.cms.util.HttpUtils;
+import com.merry.cms.util.PropertyUtils;
 import com.merry.cms.vo.JsonVo;
 import com.merry.cms.vo.PrizeHistoryVo;
 
@@ -50,23 +55,28 @@ public class DrawAction {
 	@Autowired
 	private WxService wxService;
 	
+	
 	/**
 	 * 用户访问页面
 	 * @param request
 	 * @param modelMap
 	 * @return
+	 * @throws UnsupportedEncodingException 
 	 */
 	@RequestMapping(value="/come.htm",method=RequestMethod.GET)
-	public String come(HttpServletRequest request,ModelMap modelMap){
+	public String come(HttpServletRequest request,ModelMap modelMap,HttpServletResponse response) throws UnsupportedEncodingException{
 		String mobilePhone = request.getParameter("mobilePhone");
-//		String status = request.getParameter("");
+		String nickname = request.getParameter("nickname");
+		if(!StringUtils.isBlank(nickname)) {
+			nickname = URLDecoder.decode(nickname,"UTF-8");
+		}
+		String status = request.getParameter("status");
 		try{
 			//与微信接口对接  与微信对接接口代码暂没有测试
-			//wxService   调用微信接口  获取token ，目的获取openId 
-			//调用微信接口 查询当前openId是否关注当前公众号
-			//如果没关注，重定向到二维码关注页面：
-			//return "redirect:template/user/draw/ewm";
-			
+			if(StringUtil.isBlank(status)) {
+				response.sendRedirect(PropertyUtils.getValue("merry.HTTP")+"/wx/getCode");
+				return null;
+			}
 			//关注，往下执行
 			
 			if(!StringUtils.isBlank(mobilePhone)){
@@ -81,7 +91,7 @@ public class DrawAction {
 						user = new User();
 						user.setMobilePhone(mobilePhone);
 						user.setType(UserConstant.Type.wx.toString());
-						user.setName(mobilePhone);
+						user.setName(nickname);
 						userService.addUser(user);
 					}
 					//添加访问记录
@@ -93,16 +103,18 @@ public class DrawAction {
 					log.setDescString("本地访问");
 					loginLogService.addLoginLog(log);
 				}
-			}else {
-				
 			}
 			modelMap.put("mobilePhone", mobilePhone);
+			modelMap.put("nickname", nickname);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		return "template/user/draw/drawjs";
 	}
-	
+	@RequestMapping(value="/ewm.htm",method=RequestMethod.GET)
+	public String ewm(HttpServletRequest request,ModelMap modelMap){
+		return "template/user/draw/ewm";
+	}
 	@RequestMapping("/draw.json")
 	@ResponseBody
 	public JsonVo<Prize> draw(@RequestParam(value="mobilePhone") String mobilePhone,HttpServletRequest request,ModelMap modelMap){
@@ -153,7 +165,12 @@ public class DrawAction {
 	}
 	@RequestMapping("/receiveLog.json")
 	@ResponseBody
-	public JsonVo<String> receiveLog(@RequestParam(value="mobilePhone") String mobilePhone,HttpServletRequest request,ModelMap modelMap){
+	public JsonVo<String> receiveLog(HttpServletRequest request,ModelMap modelMap) throws UnsupportedEncodingException{
+		String mobilePhone = request.getParameter("mobilePhone");
+		String nickname = request.getParameter("nickname");
+		if(!StringUtils.isBlank(nickname)) {
+			nickname = URLDecoder.decode(nickname,"UTF-8");
+		}
 		JsonVo<String> json = new JsonVo<String>();
 		try {
 			if(!StringUtils.isBlank(mobilePhone)){
@@ -163,7 +180,7 @@ public class DrawAction {
 					user = new User();
 					user.setMobilePhone(mobilePhone);
 					user.setType(UserConstant.Type.wx.toString());
-					user.setName(mobilePhone);
+					user.setName(nickname);
 					userService.addUser(user);
 				}
 				//添加访问记录

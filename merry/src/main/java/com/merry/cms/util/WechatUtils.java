@@ -5,11 +5,15 @@ import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.merry.cms.exception.PassportException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,13 +34,16 @@ public class WechatUtils {
 		map.put("secret", secret);
 		return map;
     }
+    //获取全局token
     public static String getAccessToken(Map<String, String> map) throws HttpException, IOException {
+    	logger.debug("获取全局access_token<getAccessToken>");
     	StringBuffer buffer = new StringBuffer();
 		buffer.append("https://api.weixin.qq.com/cgi-bin/token?");
 		buffer.append("appid=" + map.get("appid"));
 		buffer.append("&secret=" + map.get("secret"));
 		buffer.append("&grant_type=client_credential");
 		String resultMsg = SendUtils.sendGet(buffer.toString(), "UTF-8");
+		logger.debug("demoJson："+resultMsg);
 		return resultMsg;
     }
     // 公众号使用scope=snsapi_base和snsapi_userinfo
@@ -55,25 +62,32 @@ public class WechatUtils {
         }
     }
 	/**
-	 * 
+	 * 获取特殊的网页授权access_token
 	 * @param appKey （公众号唯一标识）
 	 * @param secretKey （公众号的appsecret）
 	 * @param code 获取用户授权的code
 	 * @return
 	 */
-    public static Token getToken(String appKey, String secretKey, String code){
-        String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid="
-                + appKey + "&secret=" + secretKey + "&code=" + code + "&grant_type=authorization_code";
-        HttpClient httpClient = new HttpClient();
+    public static Token getToken(Map<String,String> params){
+    	logger.debug("获取特殊的网页授权access_token<getToken>");
+        params.put("grant_type", "authorization_code");
+
+//        String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid="
+//                + appKey + "&secret=" + secretKey + "&code=" + code + "&grant_type=authorization_code";
+//        String url = "https://api.weixin.qq.com/sns/oauth2/access_token";
+        String result = HttpClientUtil.doPost(
+                "https://api.weixin.qq.com/sns/oauth2/access_token", params);
+        JSONObject jsonObject = JSON.parseObject(result);
+        logger.debug("demoJson："+jsonObject);
+        String access_token = jsonObject.get("access_token").toString();
+        /*注意这里的access_token首先请注意，这里通过code换取的是一个特殊的网页授权access_token,
+        	与基础支持中的access_token（该access_token用于调用其他接口）不同*/
+        String openid = jsonObject.get("openid").toString();
         try {
-            Response response = httpClient.get(url, "code");
-            logger.debug(response.asString());
             Token token = new Token();
-            Object openid = response.asJSONObject().get("openid");
-            Object accessToken = response.asJSONObject().get("access_token");
-            if (null != openid && null != accessToken) {
-                token.setOpendid(openid.toString());
-                token.setAccessToken(accessToken.toString());
+            if (null != openid && null != access_token) {
+                token.setOpendid(openid);
+                token.setAccessToken(access_token);
                 return token;
             } else {
                 return null;
@@ -82,15 +96,86 @@ public class WechatUtils {
             throw new PassportException(e);
         }
     }
-
+    /**
+     * 判断是否关注公众号
+     * @param token  全局token
+     * @param openid
+     * @return
+     */
+    public static boolean judgeIsFollow(String token,String openid){
+    	logger.debug("调用是否关注微信公众号接口<judgeIsFollow>");
+        Integer subscribe = 0;
+    	String url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token="+token+"&openid="+openid+"&lang=zh_CN";
+        try {  
+                URL urlGet = new URL(url);  
+                HttpURLConnection http = (HttpURLConnection) urlGet.openConnection();  
+                http.setRequestMethod("GET"); // 必须是get方式请求  
+                http.setRequestProperty("Content-Type","application/x-www-form-urlencoded");  
+                http.setDoOutput(true);  
+                http.setDoInput(true);  
+                http.connect();  
+                InputStream is = http.getInputStream();  
+                int size = is.available();  
+                byte[] jsonBytes = new byte[size];  
+                is.read(jsonBytes);  
+                String message = new String(jsonBytes, "UTF-8");  
+                JSONObject demoJson = JSON.parseObject(message);  
+                logger.debug("demoJson:"+demoJson);
+                subscribe = demoJson.getIntValue("subscribe");
+                is.close();  
+        } catch (Exception e) {  
+                e.printStackTrace();  
+        }
+        return 1==subscribe?true:false;
+    }
+    /**
+     * 移动接口获取用户信息
+     * @return
+     */
+    public static String getFwUserInfo(String appId, String code) {
+    	String info = null;
+    	logger.debug("调用移动接口获取用户信息<getFwUserInfo>");
+    	String url = PropertyUtils.getValue("merry.fw")+"?code="+code+"&accountId="+appId;
+    	logger.debug("url:"+url);
+        try {  
+                URL urlGet = new URL(url);  
+                HttpURLConnection http = (HttpURLConnection) urlGet.openConnection();  
+                http.setRequestMethod("GET"); // 必须是get方式请求  
+                http.setRequestProperty("Content-Type","application/x-www-form-urlencoded");  
+                http.setDoOutput(true);  
+                http.setDoInput(true);  
+                http.connect();  
+                InputStream is = http.getInputStream();  
+                int size = is.available();  
+                byte[] jsonBytes = new byte[size];  
+                is.read(jsonBytes);  
+                info = new String(jsonBytes, "UTF-8");  
+                logger.debug("demoJson:"+info);
+                is.close();  
+        } catch (Exception e) {  
+                e.printStackTrace();  
+        }
+        return info;
+    }
+    /**
+     * 获取微信用户信息
+     * @param accessToken
+     * @param openId
+     * @return
+     */
     public static UserInfo getUserInfo(String accessToken, String openId) {
-        String url = "https://api.weixin.qq.com/sns/userinfo?access_token=" +
-                accessToken + "&openid=" + openId + "&lang=zh_CN";
-        HttpClient httpClient = new HttpClient();
+    	Map<String,String> params = new HashMap<String,String>();
+        params.put("access_token", accessToken);
+        params.put("openid", openId);
+        params.put("lang", "zh_CN");
+//        String url = "https://api.weixin.qq.com/sns/userinfo?access_token=" +
+//                accessToken + "&openid=" + openId + "&lang=zh_CN";
         try {
-            Response response = httpClient.get(url, "code");
-            logger.debug(response.asString());
-            return parseUserInfo(response.asJSONObject());
+        	String result = HttpClientUtil.doPost(
+                    "https://api.weixin.qq.com/sns/userinfo", params);
+            logger.info("getUserInfo result:"+result);
+            JSONObject jsonObject = JSON.parseObject(result);
+            return parseUserInfo(jsonObject);
         } catch (Exception e) {
             throw new PassportException(e);
         }
@@ -184,7 +269,8 @@ public class WechatUtils {
         private String province;
         private String country;
         private String headImgUrl;
-
+        private String telnum;
+        
         public UserInfo() {}
 
         public UserInfo(String openId, String nickName, int sex, String language, String city, String province, String country, String headImgUrl) {
@@ -212,12 +298,19 @@ public class WechatUtils {
                     '}';
         }
 
-        public String getOpenId() {
-            return openId;
+        public String getTelnum() {
+            return telnum;
         }
 
+        public void setTelnum(String telnum) {
+            this.telnum = telnum;
+        }
+        public String getOpenId() {
+        	return openId;
+        }
+        
         public void setOpenId(String openId) {
-            this.openId = openId;
+        	this.openId = openId;
         }
 
         public String getNickName() {

@@ -2,6 +2,7 @@ package com.merry.cms.action;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
@@ -21,6 +22,7 @@ import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.merry.cms.constant.SystemConstant;
 import com.merry.cms.service.AdminService;
 import com.merry.cms.util.HttpUtils;
+import com.merry.cms.util.PropertyUtils;
 import com.merry.cms.vo.JsonVo;
 /**
  * 用户登陆界面
@@ -99,8 +101,9 @@ public class AdminAction {
 		return json;
 	}
 	@RequestMapping(value="/logout.htm")
-	public String logout(HttpServletRequest request,ModelMap modelMap){
+	public String logout(HttpServletRequest request, HttpServletResponse response,ModelMap modelMap) throws IOException{
 		request.getSession().removeAttribute(SystemConstant.SESSION_ADMIN);
-		return "redirect:"+HttpUtils.getBasePath(request);
+		response.sendRedirect(PropertyUtils.getValue("merry.HTTP")+"/admin/login.htm");
+        return null;
 	}
 }

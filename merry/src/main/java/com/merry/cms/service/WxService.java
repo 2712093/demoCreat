@@ -27,13 +27,18 @@ import redis.clients.jedis.JedisPool;
 public class WxService {
 	@Autowired
     private JedisPool jedisPool;//注入JedisPool
-	
+	/**
+	 * 获取全局token
+	 * @param map
+	 * @return
+	 * @throws HttpException
+	 * @throws IOException
+	 */
 	public String wxAccessToken(Map<String, String> map) throws HttpException, IOException {
 		Jedis jedis = jedisPool.getResource();
 		String cacheAccess_token = jedis.get("access_token");
 		if (null == cacheAccess_token) {
 			// 获取cacheAccess_token
-						// 这段代码实际开发过程中要写成一个方法，我这里为了演示方便写在了一起。
 			String resultMsg = WechatUtils.getAccessToken(map);
 			JSONObject json = JSON.parseObject(resultMsg);
 			cacheAccess_token = json.getString("access_token");

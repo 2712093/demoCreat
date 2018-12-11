@@ -37,6 +37,7 @@ public class GlobalInterceptor implements HandlerInterceptor{
 		modelAndView.addObject("TEMPLATE_DRAW_PATH",basePath+"/static/template/"+configService.getStringByKey(ConfigConstant.SHAMROCK_TEMPLATE)+"/draw");
 		modelAndView.addObject("TEMPLATE_MANAGE_PATH",basePath+"/static/template/manage");
 		modelAndView.addObject("merry_seo_title","抽奖");
+		modelAndView.addObject("draw_title","圣诞节流量大派送");
 		//獎品規則描述
 		MDC.put("ip", HttpUtils.getIp(request));
 	}

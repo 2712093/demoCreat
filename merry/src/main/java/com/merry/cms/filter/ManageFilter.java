@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import com.merry.cms.constant.SystemConstant;
 import com.merry.cms.entity.Admin;
+import com.merry.cms.util.PropertyUtils;
 
 public class ManageFilter implements Filter{
 	protected final Logger logger = Logger.getLogger(this.getClass());
@@ -32,8 +33,7 @@ public class ManageFilter implements Filter{
 		Admin admin = (Admin) request.getSession().getAttribute(SystemConstant.SESSION_ADMIN);
 		if(admin==null){
 			String path = request.getContextPath();
-			String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path;
-			response.sendRedirect(basePath+"/admin/login.htm");
+			response.sendRedirect(PropertyUtils.getValue("merry.HTTP")+path+"/admin/login.htm");
 		}else{
 			chain.doFilter(request, response);
 		}

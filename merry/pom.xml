@@ -207,7 +207,18 @@
 		    <artifactId>jedis</artifactId>
 		    <version>2.9.0</version>
 		</dependency>
-		
+		<dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.6</version>
+        </dependency>
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpcore</artifactId>
+		    <version>4.4.10</version>
+		</dependency>
+
+
 	</dependencies>
 
 
@@ -217,11 +228,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.8.0</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<meminitial>512m</meminitial>
 					<maxmem>1024m</maxmem>
 					<fork>true</fork>

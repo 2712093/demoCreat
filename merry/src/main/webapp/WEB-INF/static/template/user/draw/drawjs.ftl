@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes">
-<title>圣诞节流量大派送</title>
+<title>${draw_title}</title>
 <meta name="description" content="">
 <meta name="keywords" content="">
     <link href="${TEMPLATE_DRAW_PATH}/css/reset.css" type="text/css" rel="stylesheet"/>
@@ -204,6 +204,7 @@
 <script type="text/javascript">
 
 	var mobilePhone = "${mobilePhone?if_exists}";
+	var nickname = "${nickname?if_exists}";
 	if(mobilePhone == '00'){
 		if(confirm("不是北京号码不能参加该活动!")){
 			closeWin();
@@ -243,6 +244,8 @@
 		}
 		//跑马灯最新获奖记录
 		prizeTop();
+		//微信分享
+		share();
 	})();
 	
 	
@@ -309,7 +312,7 @@
 		        type: "POST",
 		        url: "${BASE_PATH}/draw/receiveLog.json",
 		        contentType: "application/x-www-form-urlencoded; charset=utf-8",
-		        data: {mobilePhone:mobilePhone},
+		        data: {mobilePhone:mobilePhone,nickname:encodeURIComponent(nickname)},
 		        dataType: "json",
 		        success: function (data) {
 		           if (data.result) {
@@ -405,7 +408,7 @@
 	           		if(typeof data.t != "undefined" && !$.isEmptyObject(data.t)){
 	           			var  html = "";
 	           			$.each(data.t,function(i,n){
-	           				var  mp = n.mobilePhone.substr(0,3)+"****"+n.mobilePhone.substr(7,4)
+	           				var  mp = n.userName;
 	           				html += "恭喜" + mp + "用户获得"+n.name;
 	           				$("#marquee"+(i+1)).html(html);
 	           			})
@@ -419,6 +422,94 @@
 	        }
 	    });
 	}
-	
+	function share(){
+		$.ajax({
+		url:  "${BASE_PATH}/wx/cover.json",
+		async: true,
+		type: "GET",
+		dataType: "json",
+		async: true,
+		data: {
+		},
+		success: function(data) {
+			wx.config({
+				debug: false,
+				appId: data.appId,
+				timestamp: data.timestamp,
+				nonceStr: data.nonceStr,
+				signature: data.signature,
+				jsApiList: ['checkJsApi',
+					        'openLocation',
+					        'getLocation',
+					        'onMenuShareTimeline',
+					        'onMenuShareAppMessage']
+			});
+ 
+			//--
+			wx.ready(function() {
+				//分享朋友
+			  wx.onMenuShareAppMessage({
+	            title: '${draw_title}',
+	            desc: '年底最后一波，走起！',
+	            link: data.link,
+	            imgUrl: '${TEMPLATE_DRAW_PATH}/images/icon.jpg',
+	                 trigger: function (res) {
+	                     // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
+	                     //alert('用户点击发送给朋友');
+	                 },
+	                 success: function (res) {
+	                     //alert('已分享');
+	                 },
+	                 cancel: function (res) {
+	                     //alert('已取消');
+	                 },
+	                 fail: function (res) {
+	                     //alert(JSON.stringify(res));
+	                 }
+		        });
+		
+				//分享到朋友圈
+		        wx.onMenuShareTimeline({
+		            title: '${draw_title}',
+	                 link: data.link,
+	                 imgUrl: '${TEMPLATE_DRAW_PATH}/images/icon.jpg',
+	                 trigger: function (res) {
+	                     // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
+	                     // alert('用户点击分享到朋友圈');
+	                 },
+	                 success: function (res) {
+	                     // alert('已分享');
+	                 },
+	                 cancel: function (res) {
+	                     // alert('已取消');
+	                 },
+	                 fail: function (res) {
+	                     // alert(JSON.stringify(res));
+	                 }
+	             });
+
+
+		    	});
+		
+		         wx.checkJsApi({
+		             jsApiList: [
+		                 'getLocation',
+		                 'onMenuShareTimeline',
+		                 'onMenuShareAppMessage'
+		             ],
+		             success: function (res) {
+		                 alert(JSON.stringify(res));
+		             }
+		         });
+			});
+			///---
+ 
+		},
+		error: function() {
+			console.log("二次分享错误！");
+		}
+		});
+
+	}
 </script>
 </html>
