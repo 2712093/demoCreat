@@ -1,22 +1,13 @@
 package com.merry.cms.action;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.merry.cms.service.PrizeHistoryService;
-import com.merry.cms.util.DateUtil;
-import com.merry.cms.vo.PrizeHistoryVo;
-import com.merry.cms.vo.http.ResponseDataVo;
-import com.merry.cms.vo.http.ResponseVo;
 
 @Controller
 public class IndexAction extends BaseAction{
@@ -81,39 +72,39 @@ public class IndexAction extends BaseAction{
 		return "template/manage/500";
 //		return "template/user/draw/draw";
 	}
-	@ResponseBody
-	@RequestMapping(value="/getUserInfo.json",method=RequestMethod.POST)
-	public ResponseVo getUserDrawInfo(@RequestParam(value = "begintime",  defaultValue = "") String begintime,
-			@RequestParam(value = "endtime", defaultValue = "") String endtime){
-		ResponseVo vo = new ResponseVo();
-		try {
-			vo.setCode(0);
-			String startTime = null;
-			String et = null;
-			if(!StringUtils.isBlank(begintime)) {
-				startTime = DateUtil.stampToDateToString(begintime);
-			}
-			if(!StringUtils.isBlank(endtime)) {
-				et = DateUtil.stampToDateToString(endtime);
-			}
-			List<PrizeHistoryVo> voList = prizeHistoryService.getListByTime(startTime, et);
-			if(voList!=null && voList.size()>0) {
-				List<ResponseDataVo> list = new ArrayList<ResponseDataVo>();
-				for(PrizeHistoryVo v : voList) {
-					ResponseDataVo data = new ResponseDataVo();
-					data.setAreaid(v.getId());
-					data.setPhone(v.getMobilePhone());
-					data.setTime(DateUtil.date_to_string(v.getHistoryTime(), DateUtil.FORMAT_ALL));
-					data.setType(v.getType());
-					list.add(data);
-				}
-				vo.setData(list);
-			}
-			
-		}catch(Exception e) {
-			vo.setCode(1);
-			vo.setMsg("接口异常，请与管理员联系！");
-		}
-		return vo;
-	}
+//	@ResponseBody
+//	@RequestMapping(value="/getUserInfo.json",method=RequestMethod.POST)
+//	public ResponseVo getUserDrawInfo(@RequestParam(value = "begintime",  defaultValue = "") String begintime,
+//			@RequestParam(value = "endtime", defaultValue = "") String endtime){
+//		ResponseVo vo = new ResponseVo();
+//		try {
+//			vo.setCode(0);
+//			String startTime = null;
+//			String et = null;
+//			if(!StringUtils.isBlank(begintime)) {
+//				startTime = DateUtil.stampToDateToString(begintime);
+//			}
+//			if(!StringUtils.isBlank(endtime)) {
+//				et = DateUtil.stampToDateToString(endtime);
+//			}
+//			List<PrizeHistoryVo> voList = prizeHistoryService.getListByTime(startTime, et);
+//			if(voList!=null && voList.size()>0) {
+//				List<ResponseDataVo> list = new ArrayList<ResponseDataVo>();
+//				for(PrizeHistoryVo v : voList) {
+//					ResponseDataVo data = new ResponseDataVo();
+//					data.setAreaid(v.getId());
+//					data.setPhone(v.getMobilePhone());
+//					data.setTime(DateUtil.date_to_string(v.getHistoryTime(), DateUtil.FORMAT_ALL));
+//					data.setType(v.getType());
+//					list.add(data);
+//				}
+//				vo.setData(list);
+//			}
+//			
+//		}catch(Exception e) {
+//			vo.setCode(1);
+//			vo.setMsg("接口异常，请与管理员联系！");
+//		}
+//		return vo;
+//	}
 }

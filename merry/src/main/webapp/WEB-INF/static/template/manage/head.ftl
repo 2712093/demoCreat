@@ -24,7 +24,6 @@
 <link href="${TEMPLATE_MANAGE_PATH}/css/style-responsive.css?v=${config_v}" rel="stylesheet" />
 <link href="${TEMPLATE_MANAGE_PATH}/assets/bootstrap.datetimepicker/css/bootstrap-datetimepicker.min.css?v=${config_v}" rel="stylesheet" />
 <!--datetimepicker-->
-<link href='${TEMPLATE_MANAGE_PATH}/css/datetimepicker.css?v=${config_v}' rel='stylesheet' />
 <!-- HTML5 shim and Respond.js IE8 support of HTML5 tooltipss and media queries -->
 <!--[if lt IE 9]>
       <script src="${TEMPLATE_MANAGE_PATH}/js/html5shiv.js"></script>
