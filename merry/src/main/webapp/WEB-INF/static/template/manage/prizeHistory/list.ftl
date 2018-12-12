@@ -59,8 +59,8 @@
                               <thead>
                                   <tr>
                             <th>用户名</th>
+                            <th>手机号</th>
                             <th>奖品名称</th>
-                            <th>奖品类型</th>
                             <th>奖品奖值</th>
                             <th>中奖时间</th>
                           </tr>
@@ -69,8 +69,8 @@
                                 <#list pageVo.list as e>
                                 <tr class="gradeA odd">
                                       <td>${e.userName}</td>
+                                      <td>${e.mobilePhone}</td>
                                       <td>${e.name}</td>
-                                      <td>${e.type}</td>
                                       <td>${e.prizeNumber}</td>
                                       <td>${e.historyTime?string("yyyy-MM-dd HH:mm:ss")}</td>
                                   </tr>

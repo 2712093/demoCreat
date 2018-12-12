@@ -407,10 +407,9 @@
 	           if (data.result) {
 	           		
 	           		if(typeof data.t != "undefined" && !$.isEmptyObject(data.t)){
-	           			var  html = "";
+	           			
 	           			$.each(data.t,function(i,n){
-	           				var  mp = n.userName;
-	           				html += "恭喜" + mp + "用户获得"+n.name;
+	           				var html = "恭喜" + n.userName + "用户获得"+n.name;
 	           				$("#marquee"+(i+1)).html(html);
 	           			})
 	           		}
