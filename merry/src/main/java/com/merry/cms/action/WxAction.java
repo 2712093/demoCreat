@@ -3,12 +3,10 @@ package com.merry.cms.action;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,7 +19,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.merry.cms.entity.MobilePhone;
 import com.merry.cms.service.MobilePhoneService;
-import com.merry.cms.service.WxService;
 import com.merry.cms.util.PropertyUtils;
 import com.merry.cms.util.WechatUtils;
 import com.merry.cms.vo.JsSignature;
@@ -30,8 +27,6 @@ import com.merry.cms.vo.JsSignature;
 @RequestMapping("/wx")
 public class WxAction {
 	protected final Logger logger = Logger.getLogger(this.getClass());
-	@Autowired
-	private WxService wxService;
 	@Autowired
 	private MobilePhoneService mobilePhoneService;
 	
@@ -62,7 +57,7 @@ public class WxAction {
 		
 		String mobilePhone = null;
 		String nickname = null;
-		//获取用户信息   暂时没有手机号 ，需要打印微信返回用户对象看看有没有手机号，以及手机号对应的字段
+		//获取用户信息
 		String info = WechatUtils.getFwUserInfo(PropertyUtils.getValue("merry.accountid"),code);
 		JSONObject demoJson =  JSON.parseObject(info);
 		String status =demoJson.getString("status");

@@ -134,8 +134,12 @@
     	</div>	
     </div>
 	<!--告诉朋友 弹窗-->
-	<div id="tellaFriends">
+	<div id="tellaFriends" onclick="closetell()">
 	   <img src="${TEMPLATE_DRAW_PATH}/images/tell.png">
+	</div>
+	<!--告诉横屏 弹窗-->
+	<div id="hengping" class="hengping">
+	   <img src="${TEMPLATE_DRAW_PATH}/images/shuping.jpg"  style="height:100%" >
 	</div>
 <!--开箱 弹窗-->
     <div id="popResult">
@@ -146,7 +150,7 @@
     </div>
 <!--未中奖 弹窗-->
   <div id="popNone">
-        <div class="popDivBgImgNone">
+        <div class="popDivBgImgNone" onclick="window.location.reload()">
           <img src="${TEMPLATE_DRAW_PATH}/images/gbNone01.png">
           <img src="${TEMPLATE_DRAW_PATH}/images/gbNone02.png" onclick="noneClose()">
         </div> 
@@ -157,40 +161,40 @@
    
 <!--1GB 弹窗-->
    <div id="pop01">
-        <div class="popDivBgImg"></div>
+        <div class="popDivBgImg" onclick="window.location.reload()"></div>
         <span onclick="receiveClick()">收下咯，去查查流量吧</span>
     </div>
 
 <!--2GB 弹窗-->
     <div id="pop02">
-    	<div class="popDivBgImg02"></div>
+    	<div class="popDivBgImg02" onclick="window.location.reload()"></div>
     	<span onclick="receiveClick()">收下咯，去查查流量吧</span>
     </div>
 
 <!--3GB 弹窗-->
     <div id="pop03">
-    	<div class="popDivBgImg03"></div>
+    	<div class="popDivBgImg03" onclick="window.location.reload()"></div>
     	<span onclick="receiveClick()">收下咯，去查查流量吧</span>
     </div>
 
 <!--4GB 弹窗-->
     <div id="pop04">
-    	<div class="popDivBgImg04"></div>
+    	<div class="popDivBgImg04" onclick="window.location.reload()"></div>
     	<span onclick="receiveClick()">收下咯，去查查流量吧</span>
     </div>
 <!--5GB 弹窗-->
     <div id="pop05">
-    	<div class="popDivBgImg05"></div>
+    	<div class="popDivBgImg05" onclick="window.location.reload()"></div>
     	<span onclick="receiveClick()">收下咯，去查查流量吧</span>
     </div>
 <!--8GB 弹窗-->
     <div id="pop08">
-    	<div class="popDivBgImg08"></div>
+    	<div class="popDivBgImg08" onclick="window.location.reload()"></div>
     	<span onclick="receiveClick()">收下咯，去查查流量吧</span>
     </div> 
 <!--10GB 弹窗-->
     <div id="pop10">
-    	<div class="popDivBgImg10"></div>
+    	<div class="popDivBgImg10" onclick="window.location.reload()"></div>
     	<span onclick="receiveClick()">收下咯，去查查流量吧</span>
     </div>     
     <a id="alink" href="http://wx.10086.cn/website/serviceMargin/index/new" style="visibility: hidden;">收下咯，去查查流量吧</a>     
@@ -201,6 +205,7 @@
 </body>
  <script src="${TEMPLATE_DRAW_PATH}/js/swiper.min.js"></script>
  <script src="${TEMPLATE_DRAW_PATH}/js/jquery.liMarquee.js"></script>
+ <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 <script type="text/javascript">
 
 	var mobilePhone = "${mobilePhone?if_exists}";
@@ -392,8 +397,24 @@
 	   var openBtnFriend = document.getElementById("tellaFriends");
 	    openBtnFriend.style.display="block";
 	}
-	
-	
+	function closetell() {
+      var openBtnFriend = document.getElementById("tellaFriends");
+      openBtnFriend.style.display = "none";
+  	}
+	window.addEventListener("onorientationchange" in window ? "orientationchange" : "resize", hengshuping, false);
+	function hengshuping() {
+      if (window.orientation == 90 || window.orientation == -90) {
+          //横屏
+         // alert('横屏');
+          var openhengping = document.getElementById("hengping");
+          openhengping.style.display = "block";
+
+      } else {
+          //竖屏
+          window.location.href=location.href;
+      }
+
+    }
 	function prizeTop(){
 		//获取最新中奖记录前3条
 		 $.ajax({
@@ -406,10 +427,9 @@
 	           if (data.result) {
 	           		
 	           		if(typeof data.t != "undefined" && !$.isEmptyObject(data.t)){
-	           			var  html = "";
+	           			
 	           			$.each(data.t,function(i,n){
-	           				var  mp = n.userName;
-	           				html += "恭喜" + mp + "用户获得"+n.name;
+	           				var html = "恭喜" + n.userName + "用户获得"+n.name;
 	           				$("#marquee"+(i+1)).html(html);
 	           			})
 	           		}
@@ -439,10 +459,10 @@
 				nonceStr: data.nonceStr,
 				signature: data.signature,
 				jsApiList: ['checkJsApi',
-					        'openLocation',
-					        'getLocation',
+							'getLocation',
 					        'onMenuShareTimeline',
-					        'onMenuShareAppMessage']
+					        'onMenuShareAppMessage',
+					        'onMenuShareQQ']
 			});
  
 			//--
@@ -472,6 +492,7 @@
 		        wx.onMenuShareTimeline({
 		            title: '${draw_title}',
 	                 link: data.link,
+	                 desc: '年底最后一波，走起！',
 	                 imgUrl: '${TEMPLATE_DRAW_PATH}/images/icon.jpg',
 	                 trigger: function (res) {
 	                     // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
@@ -488,14 +509,19 @@
 	                 }
 	             });
 
-
-		    	});
-		
+				//分享到QQ
+				wx.onMenuShareQQ({ 
+					title: '${draw_title}',
+					desc: '年底最后一波，走起！',
+					link: data.link,
+					imgUrl: '${TEMPLATE_DRAW_PATH}/images/icon.jpg'
+				});
 		         wx.checkJsApi({
 		             jsApiList: [
 		                 'getLocation',
 		                 'onMenuShareTimeline',
-		                 'onMenuShareAppMessage'
+		                 'onMenuShareAppMessage',
+		                 'onMenuShareQQ'
 		             ],
 		             success: function (res) {
 		                 alert(JSON.stringify(res));
